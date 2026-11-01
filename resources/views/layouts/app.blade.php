@@ -29,6 +29,7 @@
     @stack('head')
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased" @keydown.escape.window="guide=false"
+      @keydown.window="if ($event.key === '?' && !['INPUT', 'TEXTAREA', 'SELECT'].includes($event.target.tagName)) openGuide()"
       x-data="{ nav: false, guide: false, guideHtml: '', async openGuide() { this.guide = true; if (!this.guideHtml) { this.guideHtml = await (await fetch('{{ route('guide.panel', \App\Support\Guide::keyForRoute(request()->route()?->getName())) }}')).text(); } } }">
 @php
     $u = auth()->user();
@@ -121,9 +122,9 @@
             </div>
             <a href="{{ route('tickets.create') }}" class="hidden sm:inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold">
                 <x-icon name="plus" class="w-4 h-4"/> Tiket Baru</a>
-            {{-- Tombol Panduan (kontekstual sesuai layar aktif) --}}
-            <button @click="openGuide()" class="inline-flex items-center gap-1.5 h-10 px-3 sm:px-4 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-sm font-semibold" title="Panduan layar ini">
-                <x-icon name="book" class="w-4 h-4"/><span class="hidden sm:inline">Panduan</span></button>
+            {{-- Tombol Bantuan (kontekstual sesuai layar aktif): konsep & cara input data --}}
+            <button @click="openGuide()" class="inline-flex items-center gap-1.5 h-10 px-3 sm:px-4 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-sm font-semibold" title="Bantuan layar ini: konsep & cara input data (tekan ?)">
+                <x-icon name="help" class="w-4 h-4"/><span class="hidden sm:inline">Bantuan</span></button>
             <div class="relative" x-data="{ o: false }" @click.outside="o=false">
                 <button @click="o=!o" class="flex items-center gap-2">
                     <span class="grid place-items-center w-9 h-9 rounded-full bg-gradient-to-br from-amber-300 to-rose-400 text-white text-sm font-bold">{{ mb_substr($u->name, 0, 1) }}</span>
@@ -170,7 +171,7 @@
         @php $gk = \App\Support\Guide::keyForRoute(request()->route()?->getName()); $gi = \App\Support\Guide::get($gk); @endphp
         <div class="h-16 px-5 flex items-center gap-3 border-b border-slate-200 shrink-0">
             <span class="grid place-items-center w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600"><x-icon name="book" class="w-5 h-5"/></span>
-            <div class="flex-1 min-w-0"><p class="text-[11px] font-semibold uppercase tracking-widest text-indigo-600">Panduan layar ini</p><p class="font-bold truncate">{{ $gi['title'] }}</p></div>
+            <div class="flex-1 min-w-0"><p class="text-[11px] font-semibold uppercase tracking-widest text-indigo-600">Bantuan layar ini</p><p class="font-bold truncate">{{ $gi['title'] }}</p></div>
             <a href="{{ route('guide.index') }}#{{ $gk }}" class="text-xs font-semibold text-indigo-600 hover:underline whitespace-nowrap">Semua topik</a>
             <button @click="guide=false" class="p-2 rounded-lg hover:bg-slate-100"><x-icon name="x" class="w-5 h-5"/></button>
         </div>

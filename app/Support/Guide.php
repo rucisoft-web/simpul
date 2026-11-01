@@ -13,10 +13,10 @@ class Guide
     public const ROUTES = [
         'dashboard' => 'dashboard', 'tickets.index' => 'tickets', 'tickets.create' => 'ticket-create', 'tickets.show' => 'ticket-show',
         'changes.calendar' => 'calendar', 'cis.index' => 'cmdb', 'cis.show' => 'ci-show', 'topology.index' => 'topology',
-        'locations.index' => 'locations', 'brands.index' => 'brands', 'services.index' => 'services', 'services.show' => 'services',
-        'slas.index' => 'slas', 'contracts.index' => 'contracts', 'knowledge.index' => 'knowledge', 'knowledge.faq' => 'knowledge',
-        'knowledge.ke' => 'knowledge', 'contacts.index' => 'contacts', 'organizations.index' => 'organizations', 'events.index' => 'events',
-        'improvements.index' => 'improvements', 'itil.index' => 'itil', 'reports.index' => 'reports',
+        'locations.index' => 'locations', 'brands.index' => 'brands', 'services.index' => 'services', 'services.show' => 'service-show',
+        'slas.index' => 'slas', 'contracts.index' => 'contracts', 'knowledge.index' => 'knowledge', 'knowledge.faq' => 'knowledge-faq',
+        'knowledge.ke' => 'knowledge-ke', 'contacts.index' => 'contacts', 'organizations.index' => 'organizations', 'events.index' => 'events',
+        'improvements.index' => 'improvements', 'itil.index' => 'itil', 'reports.index' => 'reports', 'login' => 'mulai', 'landing' => 'mulai',
     ];
 
     public static function keyForRoute(?string $route): string
@@ -27,11 +27,11 @@ class Guide
     public static function groups(): array
     {
         return [
-            'Memulai' => ['mulai', 'navigasi'],
+            'Memulai' => ['mulai', 'navigasi', 'data'],
             'Operasional' => ['dashboard', 'tickets', 'ticket-create', 'ticket-show', 'events', 'calendar'],
             'Konfigurasi (CMDB)' => ['cmdb', 'ci-show', 'topology', 'locations', 'brands'],
-            'Layanan' => ['services', 'slas', 'contracts'],
-            'Pengetahuan & Orang' => ['knowledge', 'contacts', 'organizations'],
+            'Layanan' => ['services', 'service-show', 'slas', 'contracts'],
+            'Pengetahuan & Orang' => ['knowledge', 'knowledge-faq', 'knowledge-ke', 'contacts', 'organizations'],
             'ITIL 4' => ['itil', 'improvements', 'reports'],
         ];
     }
@@ -75,6 +75,24 @@ class Guide
                     'Klik <b>+ Tiket Baru</b> untuk langsung membuat tiket dari layar mana pun.',
                 ],
                 'tips' => ['Di layar ponsel, buka sidebar dengan ikon ☰ di kiri atas.'],
+                'fields' => ['Pemilih organisasi' => 'Filter global; tersimpan selama sesi sampai diganti.', 'Pencarian header' => 'Nomor referensi (mis. I-000123) atau sebagian judul tiket, lalu Enter.', 'Tombol Bantuan' => 'Membuka penjelasan konsep & cara input untuk layar yang sedang aktif.'],
+            ],
+            'data' => [
+                'title' => 'Asal Data & Batasan Input',
+                'path' => '/dashboard', 'image' => 'dashboard', 'icon' => 'database',
+                'concept' => [
+                    'Data induk (organisasi, lokasi, orang, tim, CI, layanan, SLA, kontrak, FAQ, Known Error) dimuat oleh <b>seeder</b> mengikuti data model iTop. Di aplikasi, layar-layar tersebut bersifat <b>telusur & analisis</b> (lihat, saring, dan klik ke detail).',
+                    'Data yang diinput langsung oleh pengguna adalah data operasional: <b>tiket</b> (Insiden, Permintaan, Problem, Perubahan), <b>transisi status</b> tiket, dan <b>catatan aktivitas</b> (log publik/privat).',
+                ],
+                'steps' => [
+                    'Untuk mencatat gangguan, permintaan, problem, atau perubahan: klik <b>+ Tiket Baru</b> di kanan atas.',
+                    'Untuk memproses tiket: buka detail tiket → panel <b>Langkah berikutnya</b>.',
+                    'Untuk menambah percakapan: kotak <b>Aktivitas & Komunikasi</b> di detail tiket.',
+                    'Untuk mencari data induk: gunakan filter & kotak cari di tiap layar (CMDB, Kontak, Basis Pengetahuan).',
+                    'Administrator dapat memuat ulang seluruh data demo dengan perintah <code>php artisan demo:reset</code>.',
+                ],
+                'fields' => ['Diinput pengguna' => 'Tiket, transisi status, catatan aktivitas.', 'Dimuat seeder' => 'Organisasi, lokasi, orang, tim, CI, layanan, SLA, kontrak, pengetahuan, event.'],
+                'tips' => ['Tombol Bantuan di kanan atas selalu membuka panduan layar yang sedang Anda buka.'],
             ],
             'dashboard' => [
                 'title' => 'Dashboard Layanan TI',
@@ -166,6 +184,7 @@ class Guide
                     'Klik nama CI untuk membuka detail perangkat, atau ref insiden untuk melihat tiket hasil korelasi.',
                     'Grafik bertumpuk menunjukkan pola event 7 hari per severity.',
                 ],
+                'fields' => ['Severity' => 'info, warning, minor, major, critical (merah = kritis).', 'Pesan' => 'Teks alarm dari alat monitoring.', 'CI' => 'Perangkat/aplikasi sumber event; klik untuk detail CI.', 'Sumber' => 'Alat monitoring pengirim event (Zabbix, PRTG, Wazuh, dll.).', 'Status' => 'open (belum ditangani), acknowledged (sedang ditangani), closed.', 'Insiden' => 'Tiket insiden hasil korelasi event, bila ada.'],
             ],
             'calendar' => [
                 'title' => 'Kalender Perubahan (Change Enablement)',
@@ -180,6 +199,7 @@ class Guide
                     'Klik <b>Ajukan Perubahan</b> untuk membuat Request for Change (RFC) baru.',
                     'Gulir ke bawah untuk daftar seluruh perubahan beserta risiko, downtime, dan status.',
                 ],
+                'fields' => ['Warna entri' => 'Hijau = Standard, ungu = Normal, merah = Emergency.', 'Risiko' => 'Tingkat risiko perubahan hasil penilaian.', 'Downtime' => 'Perkiraan waktu layanan tidak tersedia selama implementasi.', 'Jadwal' => 'Diisi pada kolom "Jadwal implementasi" saat membuat tiket Perubahan.'],
             ],
             'cmdb' => [
                 'title' => 'Configuration Items (CMDB)',
@@ -228,6 +248,7 @@ class Guide
                     'Centang <b>Tampilkan endpoint</b> untuk menyertakan PC, printer, CCTV, IP phone, dan server.',
                     'Ganti ke mode <b>Lokasi</b> untuk melihat hierarki lokasi.',
                 ],
+                'fields' => ['Organisasi' => 'Tombol di kiri atas; topologi selalu per satu organisasi induk.', 'Mode Jaringan / Lokasi' => 'Pohon uplink perangkat atau pohon hierarki lokasi.', 'Tampilkan endpoint' => 'Centang untuk menambah PC, printer, CCTV, IP phone, dan server.', 'Warna isi / tepi node' => 'Isi = peran perangkat; tepi = merek.'],
             ],
             'locations' => [
                 'title' => 'Lokasi',
@@ -241,6 +262,7 @@ class Guide
                 'path' => '/brands', 'image' => 'brands', 'icon' => 'tag',
                 'concept' => ['Tipologi Brand → Model (iTop) memudahkan standarisasi perangkat, perencanaan suku cadang, dan negosiasi kontrak vendor di lingkungan multi-vendor.'],
                 'steps' => ['Baca matriks merek × organisasi: angka = jumlah perangkat; warna makin pekat = makin banyak.', 'Klik nama merek untuk membuka CMDB tersaring ke merek tersebut.', 'Kartu di bawah merinci model per merek beserta kelas CI-nya.'],
+                'fields' => ['Angka matriks' => 'Jumlah perangkat merek tersebut di organisasi itu.', 'Model' => 'Tipe perangkat per merek beserta kelas CI-nya.'],
             ],
             'services' => [
                 'title' => 'Katalog Layanan',
@@ -250,18 +272,37 @@ class Guide
                     'ITIL 4 menambahkan sudut pandang <b>value stream</b> — rangkaian langkah penciptaan nilai, mis. "Pemesanan Perjalanan", "Produksi Migas", "Siklus Akademik".',
                 ],
                 'steps' => ['Pilih tampilan <b>Per Service Family</b> atau <b>Per Value Stream</b>.', 'Klik kartu layanan untuk melihat subkategori, CI pendukung, kontrak & SLA, statistik 90 hari, dan tiket terbaru.', 'Klik <b>Ajukan Tiket</b> dari halaman layanan.'],
+                'fields' => ['Service Family' => 'Kelompok layanan (Konektivitas, Aplikasi Bisnis, Keamanan, dst.).', 'Value stream' => 'Rangkaian penciptaan nilai yang didukung layanan.', 'Subkategori merah / biru' => 'Merah = untuk insiden, biru = untuk permintaan layanan.'],
+            ],
+            'service-show' => [
+                'title' => 'Detail Layanan',
+                'path' => '/services/{svc}', 'image' => 'service-show', 'icon' => 'grid',
+                'concept' => [
+                    'Halaman ini menyatukan semua yang menopang satu layanan: <b>subkategori</b> (jenis insiden/permintaan yang dapat diajukan), <b>CI pendukung</b> (aplikasi, server, perangkat jaringan), <b>kontrak & SLA</b> yang mengikat, statistik 90 hari, dan tiket terbaru.',
+                    'Dengan melihat CI pendukung dan tiket sekaligus, pemilik layanan dapat menilai apakah gangguan berasal dari komponen tertentu.',
+                ],
+                'steps' => [
+                    'Baca panel <b>Subkategori</b>: label merah untuk insiden, biru untuk permintaan layanan.',
+                    'Klik CI pada panel <b>CI pendukung</b> untuk membuka detail & analisis dampaknya.',
+                    'Periksa panel <b>Kontrak & SLA</b> untuk mengetahui target TTO/TTR yang berlaku.',
+                    'Klik <b>Ajukan Tiket</b> untuk membuat tiket; di form, pilih layanan ini pada isian <b>Layanan & subkategori</b>.',
+                    'Klik ref pada <b>Tiket terbaru</b> untuk membuka detail tiket.',
+                ],
+                'fields' => ['Subkategori' => 'Pilihan \"Layanan & subkategori\" saat membuat tiket; menentukan tim penanganan.', 'CI pendukung' => 'Komponen CMDB yang menjalankan layanan.', 'Kartu statistik' => 'Jumlah insiden & permintaan 90 hari terakhir, tiket lewat SLA, dan jumlah CI pendukung.'],
             ],
             'slas' => [
                 'title' => 'SLA & SLT',
                 'path' => '/slas', 'image' => 'slas', 'icon' => 'clock',
                 'concept' => ['SLA (Service Level Agreement) berisi sekumpulan SLT (Service Level Target). Setiap SLT = prioritas × tipe permintaan × metrik (TTO/TTR) × nilai. Demo menyediakan SLA Gold (24×7 untuk layanan kritis) dan SLA Standar (jam kerja, 1,5× lebih longgar).'],
                 'steps' => ['Bandingkan target TTO/TTR per prioritas untuk insiden dan permintaan.', 'SLA dihubungkan ke layanan melalui kontrak pelanggan/OLA (layar Kontrak).'],
+                'fields' => ['Prioritas' => 'P1 Kritis s.d. P4 Rendah, hasil matriks Dampak × Urgensi.', 'TTO' => 'Time To Own: batas tiket diambil/ditugaskan.', 'TTR' => 'Time To Resolve: batas tiket diselesaikan.', 'Insiden / Permintaan' => 'Target dibedakan per tipe tiket; permintaan lebih longgar.'],
             ],
             'contracts' => [
                 'title' => 'Kontrak (Pelanggan & Vendor)',
                 'path' => '/contracts', 'image' => 'contracts', 'icon' => 'file',
                 'concept' => ['<b>Customer contract / OLA</b> mengikat layanan + SLA kepada pelanggan internal (induk & entitas anak). <b>Provider contract</b> adalah kontrak vendor: konektivitas (Telkom, Telkomsat, Biznet), dukungan perangkat (Cisco, Fortinet, Juniper, Huawei), dan lisensi (Microsoft, SAP) — praktik Supplier Management.'],
                 'steps' => ['Pantau kolom status: <b>Berakhir N hari</b> (kuning) muncul bila kontrak habis < 90 hari.', 'Lihat CI yang tercakup oleh setiap kontrak vendor.', 'Gulir ke bawah untuk daftar OLA per entitas.'],
+                'fields' => ['Tipe' => 'Konektivitas, dukungan perangkat, atau lisensi (kontrak vendor).', 'Periode' => 'Tanggal mulai s.d. berakhir kontrak.', 'Nilai' => 'Nilai kontrak dalam Rupiah.', 'CI tercakup' => 'Perangkat/aplikasi yang didukung kontrak vendor.', 'Status' => 'Aktif, atau "Berakhir N hari" (kuning) bila kurang dari 90 hari.', 'Pelanggan / Penyedia / SLA' => 'Pada OLA: siapa menerima layanan, siapa menyediakan, dan SLA yang berlaku.'],
             ],
             'knowledge' => [
                 'title' => 'Basis Pengetahuan',
@@ -270,18 +311,43 @@ class Guide
                     '<b>FAQ</b> untuk self-help pengguna (mengurangi tiket level-1). <b>Known Error</b> adalah problem yang akar masalah dan workaround-nya sudah diketahui — hasil Problem Management. <b>Dokumen</b> memuat kebijakan, prosedur, dan runbook.',
                 ],
                 'steps' => ['Ketik kata kunci di kotak pencarian (mis. "eduroam", "VPN", "SAP") lalu klik <b>Cari</b>.', 'Klik kartu FAQ untuk membaca langkah penyelesaian. Bila tidak membantu, klik <b>Tidak, buat tiket</b>.', 'Klik Known Error untuk melihat gejala, akar masalah, workaround, solusi, dan problem terkait.'],
+                'fields' => ['Kotak pencarian' => 'Kata kunci dicocokkan ke judul, ringkasan, dan kata kunci artikel.', 'FAQ' => 'Panduan swalayan untuk pengguna.', 'Known Error' => 'Masalah dengan akar penyebab & workaround yang sudah diketahui.', 'Dokumen' => 'Kebijakan, prosedur, runbook.'],
+            ],
+            'knowledge-faq' => [
+                'title' => 'Artikel FAQ',
+                'path' => '/knowledge/faq/{faq}', 'image' => 'knowledge-faq', 'icon' => 'book',
+                'concept' => ['FAQ adalah artikel swalayan (self-help) yang memandu pengguna menyelesaikan masalah umum tanpa membuat tiket — praktik <b>Knowledge Management</b> dan <i>shift-left</i> ke level 0.'],
+                'steps' => [
+                    'Baca <b>Ringkasan</b> untuk memastikan artikel sesuai masalah Anda.',
+                    'Ikuti <b>Langkah penyelesaian</b> secara berurutan.',
+                    'Bila masalah belum selesai, klik <b>Tidak, buat tiket</b> di bagian bawah artikel untuk membuat Insiden/Permintaan.',
+                ],
+                'fields' => ['Kategori' => 'Kelompok topik FAQ (Akun & Password, Jaringan & Wi-Fi, Keamanan, dst.).', 'Kata kunci' => 'Istilah yang dipakai pencarian Basis Pengetahuan.', 'Dilihat' => 'Jumlah kali artikel dibuka (indikator topik yang sering ditanyakan).'],
+            ],
+            'knowledge-ke' => [
+                'title' => 'Known Error',
+                'path' => '/knowledge/known-error/{ke}', 'image' => 'knowledge-ke', 'icon' => 'alert',
+                'concept' => ['Known Error adalah problem yang <b>akar masalah</b> dan <b>workaround</b>-nya sudah diketahui. Agen memakai Known Error untuk memulihkan insiden serupa dengan cepat sambil menunggu solusi permanen.'],
+                'steps' => [
+                    'Cocokkan <b>Gejala</b> dan <b>Kode error</b> dengan insiden yang sedang ditangani.',
+                    'Terapkan <b>Workaround</b> untuk memulihkan layanan, lalu catat di log tiket.',
+                    'Klik <b>Buka problem P-…</b> untuk melihat analisa dan progres solusi permanen.',
+                ],
+                'fields' => ['Gejala' => 'Tanda yang dilihat pengguna/agen.', 'Kode error' => 'Pesan/kode teknis bila ada.', 'Akar masalah' => 'Penyebab hasil Problem Management.', 'Workaround' => 'Cara sementara memulihkan layanan.', 'Solusi permanen' => 'Perbaikan tuntas; \"Belum tersedia\" bila problem masih dianalisa.'],
             ],
             'contacts' => [
                 'title' => 'Kontak & Tim',
                 'path' => '/contacts', 'image' => 'contacts', 'icon' => 'users',
                 'concept' => ['<b>Person</b> mencakup pelapor, agen, dan manajer. <b>Team</b> adalah grup penugasan tiket (Service Desk, Network, Data Center, Security, dst.). Satu orang dapat menjadi anggota beberapa tim dengan peran (Team Lead, Agent L1/L2/L3).'],
                 'steps' => ['Lihat kartu tim: anggota (arahkan kursor ke avatar untuk nama & peran) dan jumlah tiket terbuka.', 'Klik <b>N tiket terbuka</b> untuk membuka antrean tim tersebut.', 'Cari orang berdasarkan nama atau jabatan pada tabel di bawah.'],
+                'fields' => ['Cari' => 'Ketik nama atau jabatan, lalu Enter.', 'Jabatan' => 'Fungsi orang di organisasinya.', 'Tim' => 'Grup penugasan tempat orang itu menjadi anggota.', 'Kontak' => 'Email/telepon kerja.'],
             ],
             'organizations' => [
                 'title' => 'Organisasi',
                 'path' => '/organizations', 'image' => 'organizations', 'icon' => 'building',
                 'concept' => ['Organisasi adalah pemilik data (multi-tenant). Organisasi induk dapat memiliki entitas anak (mis. PT Big Bird Pusaka di bawah PT Blue Bird Tbk; PT Medco Power Indonesia di bawah Medco).'],
                 'steps' => ['Bandingkan jumlah lokasi, orang, tim, CI, layanan, dan tiket per organisasi.', 'Klik <b>Fokus ke organisasi ini</b> untuk mengaktifkan filter organisasi di seluruh aplikasi.'],
+                'fields' => ['Entitas anak' => 'Organisasi di bawah induk; ikut tersaring saat induk dipilih.', 'Angka ringkasan' => 'Jumlah lokasi, orang, tim, CI, layanan, dan tiket milik organisasi.'],
             ],
             'itil' => [
                 'title' => 'Peta Praktik ITIL 4',
@@ -291,18 +357,21 @@ class Guide
                     'Layar ini memetakan setiap aktivitas value chain dan praktik ITIL 4 ke modul aplikasi, serta modul data model iTop ke praktik ITIL 4.',
                 ],
                 'steps' => ['Klik kotak aktivitas value chain untuk membuka modul terkait.', 'Praktik bertanda ✓ hijau dapat diklik menuju layar pendukungnya; lingkaran putus-putus = belum didukung modul.', 'Gulir ke tabel pemetaan iTop → ITIL 4 untuk memahami asal data model.'],
+                'fields' => ['Value chain' => 'Enam aktivitas: Plan, Improve, Engage, Design & Transition, Obtain/Build, Deliver & Support.', 'Praktik ✓' => 'Didukung modul aplikasi (dapat diklik).', 'Lingkaran putus-putus' => 'Praktik belum didukung modul.'],
             ],
             'improvements' => [
                 'title' => 'Continual Improvement Register',
                 'path' => '/improvements', 'image' => 'improvements', 'icon' => 'trending',
                 'concept' => ['Continual Improvement adalah praktik yang menyelaraskan layanan dengan kebutuhan bisnis yang berubah. Setiap inisiatif dicatat di register (CIR) dengan praktik terkait, guiding principle, manfaat, pemilik, progres, dan target — dijalankan dengan model 7 langkah CI.'],
                 'steps' => ['Baca papan kanban: Diusulkan → Disetujui → Berjalan → Selesai.', 'Bilah progres menunjukkan persentase penyelesaian; nama pemilik dan target bulan tertera di bawahnya.', 'Gulir ke bawah untuk model 7 langkah Continual Improvement.'],
+                'fields' => ['Kolom kanban' => 'Status inisiatif: Diusulkan, Disetujui, Berjalan, Selesai.', 'Praktik / prinsip' => 'Praktik ITIL 4 dan guiding principle yang terkait.', 'Manfaat' => 'Hasil yang diharapkan dari inisiatif.', 'Progres' => 'Persentase penyelesaian.', 'Pemilik & target' => 'Penanggung jawab dan bulan target selesai.'],
             ],
             'reports' => [
                 'title' => 'Laporan & SLA',
                 'path' => '/reports', 'image' => 'reports', 'icon' => 'chart',
                 'concept' => ['Praktik Measurement & Reporting: kepatuhan SLA (TTO & TTR) bulanan terhadap target 90%, MTTR bulanan, kanal masuk tiket, kode resolusi, heatmap beban (hari × jam), dan kinerja per tim.'],
                 'steps' => ['Bandingkan kartu SLA, CSAT, dan volume per organisasi di bagian atas.', 'Gunakan heatmap untuk merencanakan jadwal shift agen (warna pekat = jam sibuk).', 'Tabel kinerja tim menampilkan tiket selesai, SLA TTR, MTTR, dan CSAT 90 hari.'],
+                'fields' => ['Kepatuhan SLA' => 'Persentase tiket memenuhi TTO/TTR per bulan, dibanding target 90%.', 'MTTR' => 'Rata-rata jam penyelesaian per bulan.', 'Kanal masuk' => 'Asal tiket: portal, email, telepon, monitoring.', 'Kode resolusi' => 'Cara tiket diselesaikan (fixed, workaround, dll.).', 'Heatmap' => 'Jumlah tiket per hari × jam; makin pekat makin sibuk.'],
             ],
         ];
     }

@@ -8,6 +8,9 @@
     <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"'] } } } };</script>
 </head>
 <body class="font-sans min-h-screen grid lg:grid-cols-2 bg-white">
+    {{-- Tombol Bantuan kanan atas --}}
+    <a href="{{ route('guide.index') }}#mulai" class="fixed top-4 right-4 z-10 inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-sm font-semibold" title="Bantuan: cara masuk & memulai">
+        <x-icon name="help" class="w-4 h-4"/> Bantuan</a>
     <div class="hidden lg:flex flex-col justify-between bg-[#070f2b] text-white p-12 relative overflow-hidden">
         <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-indigo-600/40 blur-3xl"></div>
         <a href="{{ route('landing') }}" class="relative flex items-center gap-2"><span class="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-600 font-extrabold">S</span><span class="font-extrabold">Simpul</span></a>

@@ -3,13 +3,52 @@
 use App\Models\Ci;
 use App\Models\Ticket;
 use App\Support\Guide;
+use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Str;
 
 Artisan::command('demo:reset', function () {
     $this->call('migrate:fresh', ['--seed' => true, '--force' => true]);
     $this->info('Data demo telah dibuat ulang.');
 })->purpose('Hapus seluruh data dan buat ulang data demo (Bluebird, Medco, UIN Suka)');
+
+// Situs demo publik: data demo dibuat ulang setiap hari (SIMPUL_DEMO_RESET_DAILY=true + cron schedule:run).
+if (config('simpul.demo_reset_daily')) {
+    Schedule::command('demo:reset')->dailyAt(config('simpul.demo_reset_at'))->timezone(config('app.timezone'));
+}
+
+/*
+ * Membuat akun Administrator atau mengganti kata sandinya bila email sudah ada.
+ *   php artisan simpul:create-admin --name="Administrator" --email=admin@domain.com --password='SandiKuat2026'
+ */
+Artisan::command('simpul:create-admin {--name=} {--email=} {--password=}', function () {
+    $name = $this->option('name') ?: $this->ask('Nama', 'Administrator');
+    $email = $this->option('email') ?: $this->ask('Email');
+    $password = $this->option('password') ?: $this->secret('Kata sandi (minimal 8 karakter)');
+
+    if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $this->error('Email tidak valid.');
+
+        return 1;
+    }
+    if (strlen((string) $password) < 8) {
+        $this->error('Kata sandi minimal 8 karakter.');
+
+        return 1;
+    }
+
+    $user = User::where('email', $email)->first();
+    if ($user) {
+        $user->update(['name' => $name, 'password' => $password, 'role' => 'admin']);
+        $this->info("Akun {$email} dijadikan Administrator dan kata sandinya diganti.");
+    } else {
+        User::create(['name' => $name, 'email' => $email, 'password' => $password, 'role' => 'admin']);
+        $this->info("Administrator {$email} dibuat.");
+    }
+
+    return 0;
+})->purpose('Buat akun Administrator atau ganti kata sandinya');
 
 /*
  * Mengambil tangkapan layar setiap topik panduan ke public/img/panduan/*.png memakai Edge/Chrome headless.
@@ -30,7 +69,9 @@ Artisan::command('panduan:screenshot {--url=http://127.0.0.1:8000} {--browser=} 
 
     $openTicket = Ticket::where('type', 'incident')->where('status', 'assigned')->whereHas('logs')->latest()->value('ref') ?? Ticket::value('ref');
     $core = Ci::where('network_role', 'core')->value('id');
-    $targets = collect(Guide::all())->mapWithKeys(fn ($g) => [$g['image'] => strtr($g['path'], ['{open}' => $openTicket, '{core}' => $core])])->all();
+    $ids = ['{open}' => $openTicket, '{core}' => $core, '{svc}' => \App\Models\Service::whereHas('cis')->value('id'),
+        '{faq}' => \App\Models\Faq::value('id'), '{ke}' => \App\Models\KnownError::whereNotNull('problem_id')->value('id') ?? \App\Models\KnownError::value('id')];
+    $targets = collect(Guide::all())->mapWithKeys(fn ($g) => [$g['image'] => strtr($g['path'], $ids)])->all();
     $targets['topology'] .= '?org='.\App\Models\Organization::where('code', 'BBRD')->value('id');
     if ($only = $this->option('only')) {
         $targets = array_intersect_key($targets, array_flip(explode(',', $only)));

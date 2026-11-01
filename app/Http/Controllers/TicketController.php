@@ -62,6 +62,9 @@ class TicketController extends Controller
     {
         $type = $request->query('type', 'incident');
         $orgs = Organization::whereNull('parent_id')->with('children')->orderBy('name')->get();
+        if ($orgs->isEmpty()) {
+            return redirect()->route('dashboard')->with('status', 'Belum ada organisasi. Muat data demo dulu: php artisan demo:reset');
+        }
         $orgId = Scope::rootId() ?? $orgs->first()->id;
         $services = Service::with('subcategories')->where('organization_id', $orgId)->orderBy('name')->get();
         $callers = Person::whereIn('organization_id', Organization::find($orgId)->familyIds())->orderBy('first_name')->limit(300)->get();
@@ -86,7 +89,7 @@ class TicketController extends Controller
             'change_type' => 'nullable|in:standard,normal,emergency',
             'planned_start' => 'nullable|date',
         ]);
-        $sub = $data['service_subcategory_id'] ? \App\Models\ServiceSubcategory::with('service')->find($data['service_subcategory_id']) : null;
+        $sub = ! empty($data['service_subcategory_id']) ? \App\Models\ServiceSubcategory::with('service')->find($data['service_subcategory_id']) : null;
         $priority = Itil::priority($data['impact'], $data['urgency']);
         $slt = Itil::DEFAULT_SLT[$priority];
         $mult = $data['type'] === 'request' ? 2 : 1;

@@ -73,7 +73,7 @@ class DemoSeeder extends Seeder
 
         $this->seedFaq();
 
-        User::create(['name' => 'Administrator', 'email' => 'admin@simpul.test', 'password' => 'password', 'role' => 'admin']);
+        User::create(['name' => 'Administrator', 'email' => config('simpul.admin_email'), 'password' => config('simpul.demo_password'), 'role' => 'admin']);
         User::create(['name' => 'Tamu Demo', 'email' => 'tamu@simpul.test', 'password' => Str::random(32), 'role' => 'guest']);
     }
 
@@ -247,7 +247,7 @@ class DemoSeeder extends Seeder
         $this->buildImprovements($ctx, $cio);
         $this->buildDocuments($ctx);
 
-        User::create(['name' => $agents['sd'][1]->name, 'email' => 'agent.'.Str::lower($org->code).'@simpul.test', 'password' => 'password', 'role' => 'agent', 'person_id' => $agents['sd'][1]->id]);
+        User::create(['name' => $agents['sd'][1]->name, 'email' => 'agent.'.Str::lower($org->code).'@simpul.test', 'password' => config('simpul.demo_password'), 'role' => 'agent', 'person_id' => $agents['sd'][1]->id]);
     }
 
     private function nextIp(array &$ctx): string

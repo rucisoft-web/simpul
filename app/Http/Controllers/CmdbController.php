@@ -48,6 +48,9 @@ class CmdbController extends Controller
     {
         $orgs = Organization::whereNull('parent_id')->orderBy('name')->get();
         $org = $orgs->firstWhere('id', (int) $request->query('org', Scope::rootId())) ?? $orgs->firstWhere('code', 'BBRD') ?? $orgs->first();
+        if (! $org) {
+            return redirect()->route('dashboard')->with('status', 'Belum ada organisasi. Muat data demo dulu: php artisan demo:reset');
+        }
         $roleCounts = Ci::where('organization_id', $org->id)->whereNotNull('network_role')->selectRaw('network_role, COUNT(*) n')->groupBy('network_role')->pluck('n', 'network_role');
 
         return view('cmdb.topology', compact('orgs', 'org', 'roleCounts'));
