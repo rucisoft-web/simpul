@@ -1,6 +1,6 @@
 @php
     $compact = $compact ?? false;
-    $openUrl = str_contains($item['path'], '{') ? null : (auth()->check() ? url($item['path']) : route('guest.link', ['next' => $item['path']]));
+    $openUrl = str_contains($item['path'], '{') ? null : (auth()->check() ? url($item['path']) : route('landing').'#demo');
     $img = 'img/panduan/'.$item['image'].'.png';
 @endphp
 <section id="{{ $key }}" class="scroll-mt-24 {{ $compact ? '' : 'bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8' }}">

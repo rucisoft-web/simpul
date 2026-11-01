@@ -21,13 +21,14 @@ class KnowledgeController extends Controller
         $knownErrors = Scope::apply(KnownError::query(), 'organization_id', false)->with(['organization', 'problem'])
             ->when($term, fn ($q) => $q->where('name', 'like', "%$term%"))->latest()->get();
         $documents = Scope::apply(Document::query(), 'organization_id', false)->with('organization')->get();
-        $categories = FaqCategory::withCount('faqs')->get();
+        $categories = FaqCategory::withCount(['faqs' => fn ($q) => $q->when(Scope::rootId(), fn ($w) => $w->where(fn ($x) => $x->whereNull('organization_id')->orWhere('organization_id', Scope::rootId())))])->get();
 
         return view('knowledge.index', compact('faqs', 'knownErrors', 'documents', 'categories', 'term'));
     }
 
     public function faq(Faq $faq)
     {
+        Scope::ensure($faq->organization_id);
         $faq->increment('views');
 
         return view('knowledge.article', ['title' => $faq->title, 'kind' => 'FAQ · '.$faq->category->name, 'sections' => [
@@ -37,6 +38,7 @@ class KnowledgeController extends Controller
 
     public function knownError(KnownError $knownError)
     {
+        Scope::ensure($knownError->organization_id);
         $ke = $knownError->load('problem', 'organization');
 
         return view('knowledge.article', ['title' => $ke->name, 'kind' => 'Known Error · '.$ke->domain.' · '.$ke->organization->name, 'sections' => [

@@ -20,11 +20,12 @@ Route::middleware('guest')->group(function () {
 });
 Route::post('/coba-sebagai-tamu', [AuthController::class, 'guest'])->name('guest.login');
 Route::get('/coba-sebagai-tamu', [AuthController::class, 'guest'])->name('guest.link');
+Route::get('/implementasi', [GuideController::class, 'implementation'])->name('implementation');
 Route::get('/panduan', [GuideController::class, 'index'])->name('guide.index');
 Route::get('/panduan/{key}', [GuideController::class, 'panel'])->name('guide.panel');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'demo.org'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/scope', [DashboardController::class, 'scope'])->name('scope');
 

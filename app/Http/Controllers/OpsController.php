@@ -69,7 +69,7 @@ class OpsController extends Controller
 
             return $t;
         })->filter(fn ($t) => $t->stat->n > 0)->sortByDesc(fn ($t) => $t->stat->n);
-        $orgs = Organization::whereNull('parent_id')->get()->map(function ($o) {
+        $orgs = Scope::roots()->map(function ($o) {
             $ids = $o->familyIds();
             $o->stat = Ticket::whereIn('organization_id', $ids)->whereIn('type', ['incident', 'request'])->whereNotNull('resolved_at')->where('created_at', '>=', now()->subDays(90))
                 ->selectRaw('COUNT(*) n, SUM(sla_ttr_passed = 0) ok, AVG(satisfaction) csat')->first();

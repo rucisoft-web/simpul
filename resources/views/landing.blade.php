@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Simpul ITSM — Kelola Layanan TI Berbasis ITIL 4 & CMDB</title>
+    <title>Simpul ITSM Enterprise — Kelola Layanan TI Berbasis ITIL 4 & CMDB</title>
     <meta name="description" content="Aplikasi ITSM & CMDB berbasis data model iTop dan ITIL 4: service desk, topologi jaringan bertingkat, SLA, change, knowledge base.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -14,25 +14,37 @@
     @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}.float{animation:float 6s ease-in-out infinite}</style>
 </head>
 <body class="font-sans text-slate-800 antialiased bg-white">
-@php $guestForm = fn ($label, $cls) => '<form method="POST" action="'.route('guest.login').'">'.csrf_field().'<button class="'.$cls.'">'.$label.'</button></form>'; @endphp
+@php
+    $wa = config('simpul.whatsapp');
+    $waUrl = $wa ? 'https://wa.me/'.preg_replace('/\D/', '', $wa).'?text='.rawurlencode('Halo, saya ingin menjadwalkan demo Simpul ITSM Enterprise.') : null;
+    $scen = [
+        'BBRD' => ['Transportasi', '18 wilayah operasi & puluhan pool terhubung SD-WAN. MyBluebird, Driver App, pembayaran non-tunai, SAP — semua dipetakan ke layanan dan SLA.'],
+        'MEDC' => ['Energi', 'Site migas di Sumatera Selatan, Natuna, Senoro, Tailan & Oman dengan VSAT dan jaringan OT. Migrasi SAP S/4HANA, mSeek AI, SOC.'],
+        'UINSK' => ['Pendidikan Tinggi', '10 fakultas/pascasarjana, lab komputer, data center & DRC PTIPD. SUKAnet, Eduroam, SUKAdemia — lonjakan tiket saat KRS terlihat jelas.'],
+    ];
+@endphp
 
 {{-- NAV --}}
-<header class="fixed top-0 inset-x-0 z-50 bg-[#070f2b]/80 backdrop-blur border-b border-white/10" x-data="{ o: false }">
+<header class="fixed top-0 inset-x-0 z-50 bg-[#070f2b]/80 backdrop-blur border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6 text-white">
-        <a href="#" class="flex items-center gap-2"><span class="grid place-items-center w-9 h-9 rounded-xl grad font-extrabold">S</span><span class="font-extrabold">Simpul</span></a>
+        <a href="#" class="flex items-center gap-2"><span class="grid place-items-center w-9 h-9 rounded-xl grad font-extrabold">S</span><span class="font-extrabold">Simpul <span class="hidden sm:inline text-xs font-semibold text-sky-300 align-middle">Enterprise</span></span></a>
         <nav class="hidden md:flex gap-6 text-sm text-slate-300">
-            <a href="#masalah" class="hover:text-white">Tantangan</a><a href="#fitur" class="hover:text-white">Fitur</a><a href="#studi" class="hover:text-white">Skenario Demo</a><a href="#harga" class="hover:text-white">Paket</a>
+            <a href="#masalah" class="hover:text-white">Tantangan</a><a href="#fitur" class="hover:text-white">Fitur</a><a href="#demo" class="hover:text-white">Demo Perusahaan</a><a href="#enterprise" class="hover:text-white">Enterprise</a><a href="{{ route('implementation') }}" class="hover:text-white">Implementasi</a>
         </nav>
         <div class="flex-1"></div>
-        <a href="{{ route('guide.index') }}" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-slate-300 hover:text-white"><x-icon name="book" class="w-4 h-4"/> Panduan</a>
+        <a href="{{ route('guide.index') }}" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-slate-300 hover:text-white"><x-icon name="help" class="w-4 h-4"/> Panduan</a>
         @auth
             <a href="{{ route('dashboard') }}" class="text-sm font-semibold px-4 h-10 inline-flex items-center rounded-xl bg-white text-slate-900">Buka Dashboard</a>
         @else
             <a href="{{ route('login') }}" class="hidden sm:inline text-sm text-slate-300 hover:text-white">Masuk</a>
-            {!! $guestForm('Coba sebagai Tamu', 'text-sm font-semibold px-4 h-10 rounded-xl bg-white text-slate-900 hover:bg-sky-100') !!}
+            <a href="#demo" class="text-sm font-semibold px-4 h-10 inline-flex items-center rounded-xl bg-white text-slate-900 hover:bg-sky-100">Coba Demo</a>
         @endauth
     </div>
 </header>
+
+@if (session('status'))
+    <div class="fixed top-20 inset-x-0 z-40 flex justify-center px-4"><div class="rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm px-4 py-2 shadow">{{ session('status') }}</div></div>
+@endif
 
 {{-- A: ATTENTION --}}
 <section class="relative overflow-hidden bg-[#070f2b] text-white pt-32 pb-24">
@@ -40,16 +52,16 @@
     <div class="absolute top-20 -right-40 w-[500px] h-[500px] rounded-full bg-sky-500/20 blur-3xl"></div>
     <div class="relative max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center">
         <div>
-            <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-sky-200">● Satu simpul untuk semua layanan TI · ITIL 4 · iTop</span>
-            <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">Satu layar untuk <span class="text-grad">seluruh layanan TI</span> Anda.</h1>
+            <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-sky-200">● ITSM & CMDB Enterprise · ITIL 4 · data model iTop</span>
+            <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">Satu layar untuk <span class="text-grad">seluruh layanan TI</span> grup usaha Anda.</h1>
             <p class="mt-5 text-lg text-slate-300 max-w-xl">Gangguan jaringan di pool, link VSAT di anjungan lepas pantai, atau Wi-Fi kampus saat KRS — Simpul menghubungkan tiket, perangkat, layanan, dan SLA sehingga tim Anda tahu <b class="text-white">apa yang terdampak, siapa yang menangani, dan kapan harus selesai.</b></p>
-            <div class="mt-8 flex flex-wrap gap-3">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="h-12 px-6 inline-flex items-center rounded-xl grad font-bold shadow-lg shadow-indigo-500/30">Buka Dashboard →</a>
-                @else
-                    {!! $guestForm('Coba sebagai Tamu — tanpa daftar →', 'h-12 px-6 rounded-xl grad font-bold shadow-lg shadow-indigo-500/30 hover:opacity-90') !!}
-                    <a href="{{ route('login') }}" class="h-12 px-6 inline-flex items-center rounded-xl border border-white/20 hover:bg-white/10 font-semibold">Masuk</a>
-                @endauth
+            <div class="mt-8 max-w-xl rounded-2xl border border-white/15 bg-white/5 p-4">
+                @include('partials.demo-picker', ['orgs' => $orgs, 'variant' => 'chips', 'dark' => true])
+            </div>
+            <div class="mt-4 flex flex-wrap gap-3 text-sm">
+                @auth<a href="{{ route('dashboard') }}" class="font-semibold underline">Buka Dashboard →</a>@endauth
+                <a href="#demo" class="text-slate-300 hover:text-white underline">Lihat profil ketiga perusahaan</a>
+                <a href="#enterprise" class="text-slate-300 hover:text-white underline">Paket Enterprise</a>
             </div>
             <div class="mt-10 grid grid-cols-4 gap-4 max-w-lg">
                 @foreach ([[number_format($stats['cis']), 'CI di CMDB'], [number_format($stats['tickets']), 'tiket demo'], [$stats['brands'], 'merek perangkat'], [$stats['sla'].'%', 'SLA tercapai']] as [$v, $l])
@@ -129,32 +141,16 @@
     </div>
 </section>
 
-{{-- D: DESIRE — skenario --}}
-<section id="studi" class="py-24 bg-[#070f2b] text-white">
+{{-- D: DESIRE — pilih perusahaan demo --}}
+<section id="demo" class="py-24 bg-[#070f2b] text-white scroll-mt-16">
     <div class="max-w-7xl mx-auto px-4">
         <p class="text-sm font-bold text-sky-300 uppercase tracking-widest">Bayangkan di organisasi Anda</p>
-        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 max-w-3xl">Tiga skenario demo dari industri berbeda — siap Anda jelajahi.</h2>
-        <p class="text-slate-400 mt-3 max-w-3xl text-sm">Profil disusun dari Laporan Tahunan 2025 yang dipublikasikan dan situs resmi institusi. Perangkat, alamat IP, nama orang, dan tiket adalah simulasi untuk keperluan demo — tidak berafiliasi dengan organisasi terkait.</p>
-        <div class="grid lg:grid-cols-3 gap-6 mt-12">
-            @php $scen = [
-                'BBRD' => ['Transportasi', '18 wilayah operasi & puluhan pool terhubung SD-WAN. MyBluebird, Driver App, pembayaran non-tunai, SAP — semua dipetakan ke layanan dan SLA.'],
-                'MEDC' => ['Energi', 'Site migas di Sumatera Selatan, Natuna, Senoro, Tailan & Oman dengan VSAT dan jaringan OT. Migrasi SAP S/4HANA, mSeek AI, SOC.'],
-                'UINSK' => ['Pendidikan Tinggi', '10 fakultas/pascasarjana, lab komputer, data center & DRC PTIPD. SUKAnet, Eduroam, SUKAdemia — lonjakan tiket saat KRS terlihat jelas.'],
-            ]; @endphp
-            @foreach ($orgs as $o)
-                <div class="rounded-2xl bg-white/5 border border-white/10 p-6 hover:bg-white/10 transition">
-                    <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: {{ $o->color }}">{{ $scen[$o->code][0] ?? $o->industry }}</span>
-                    <p class="text-xl font-extrabold mt-4">{{ $o->name }}</p>
-                    <p class="text-slate-300 text-sm mt-2">{{ $scen[$o->code][1] ?? '' }}</p>
-                    <div class="grid grid-cols-3 gap-2 mt-5 text-center">
-                        <div class="rounded-xl bg-white/5 py-2"><p class="font-extrabold">{{ $o->cis_count }}</p><p class="text-[11px] text-slate-400">CI</p></div>
-                        <div class="rounded-xl bg-white/5 py-2"><p class="font-extrabold">{{ $o->locations_count }}</p><p class="text-[11px] text-slate-400">lokasi</p></div>
-                        <div class="rounded-xl bg-white/5 py-2"><p class="font-extrabold">{{ $o->services_count }}</p><p class="text-[11px] text-slate-400">layanan</p></div>
-                    </div>
-                </div>
-            @endforeach
+        <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 max-w-3xl">Pilih satu perusahaan, lalu jelajahi layanan TI-nya dari dalam.</h2>
+        <p class="text-slate-400 mt-3 max-w-3xl text-sm">Setiap perusahaan punya data demo sendiri: CMDB, topologi, layanan, SLA, kontrak, dan tiket 12 bulan. Setelah masuk, seluruh layar hanya menampilkan data perusahaan yang Anda pilih; pindah perusahaan lewat tautan <b class="text-slate-200">Ganti ke</b> di kanan atas. Profil disusun dari Laporan Tahunan 2025 dan situs resmi institusi; perangkat, IP, orang, dan tiket adalah simulasi dan tidak berafiliasi dengan organisasi terkait.</p>
+        <div class="mt-12">
+            @include('partials.demo-picker', ['orgs' => $orgs, 'variant' => 'cards', 'dark' => true, 'scen' => $scen])
         </div>
-        <div class="grid sm:grid-cols-3 gap-6 mt-14">
+        <div class="grid sm:grid-cols-3 gap-6 mt-16">
             @foreach ([['Lebih cepat', 'menemukan akar masalah dengan analisis dampak & korelasi event'], ['Lebih terukur', 'SLA, MTTR, CSAT, dan beban tim dalam satu laporan'], ['Lebih siap audit', 'jejak perubahan, persetujuan CAB, dan register perbaikan']] as [$t, $d])
                 <div class="border-l-2 border-sky-400 pl-4"><p class="text-2xl font-extrabold text-grad">{{ $t }}</p><p class="text-slate-300 text-sm mt-1">{{ $d }}</p></div>
             @endforeach
@@ -162,23 +158,44 @@
     </div>
 </section>
 
-{{-- D: DESIRE — paket --}}
-<section id="harga" class="py-24 bg-slate-50">
+{{-- D: DESIRE — Simpul Enterprise (satu paket lengkap) --}}
+<section id="enterprise" class="py-24 bg-slate-50 scroll-mt-16">
     <div class="max-w-6xl mx-auto px-4">
-        <div class="text-center"><p class="text-sm font-bold text-indigo-600 uppercase tracking-widest">Paket implementasi</p><h2 class="text-3xl sm:text-4xl font-extrabold mt-2">Mulai kecil, tumbuh bersama</h2></div>
-        <div class="grid md:grid-cols-3 gap-6 mt-12">
-            @foreach ([
-                ['Starter', 'Service desk + katalog layanan', ['Incident & Service Request', 'SLA TTO/TTR', 'Basis pengetahuan', 'Hingga 10 agen'], false],
-                ['Professional', 'ITSM + CMDB lengkap', ['Semua fitur Starter', 'CMDB & topologi bertingkat', 'Problem & Change (CAB)', 'Integrasi monitoring'], true],
-                ['Enterprise', 'Multi-entitas & on-premise', ['Semua fitur Professional', 'Multi-organisasi / anak usaha', 'Continual improvement & laporan eksekutif', 'Pendampingan ITIL 4'], false],
-            ] as [$n, $d, $items, $hot])
-                <div class="rounded-2xl p-7 {{ $hot ? 'bg-[#070f2b] text-white ring-4 ring-indigo-400/40 scale-[1.02]' : 'bg-white border border-slate-200' }}">
-                    @if ($hot)<span class="text-xs font-bold px-2 py-1 rounded-full grad">Paling populer</span>@endif
-                    <p class="text-2xl font-extrabold mt-3">{{ $n }}</p><p class="text-sm {{ $hot ? 'text-slate-300' : 'text-slate-500' }}">{{ $d }}</p>
-                    <ul class="mt-5 space-y-2 text-sm">@foreach ($items as $i)<li class="flex gap-2"><span class="text-emerald-400">✓</span>{{ $i }}</li>@endforeach</ul>
-                    @guest {!! $guestForm('Coba dulu sebagai tamu', 'mt-6 w-full h-11 rounded-xl font-bold '.($hot ? 'grad' : 'bg-slate-900 text-white')) !!} @endguest
+        <div class="text-center max-w-3xl mx-auto">
+            <p class="text-sm font-bold text-indigo-600 uppercase tracking-widest">Simpul Enterprise</p>
+            <h2 class="text-3xl sm:text-4xl font-extrabold mt-2">Satu paket lengkap untuk grup usaha, BUMN, dan perguruan tinggi</h2>
+            <p class="text-slate-600 mt-4">Tanpa memilih-milih modul. Semua yang Anda lihat di demo ikut dipasang, disesuaikan dengan struktur organisasi, layanan, dan perangkat Anda.</p>
+        </div>
+        <div class="mt-12 rounded-3xl bg-[#070f2b] text-white p-8 sm:p-10 ring-4 ring-indigo-400/30 shadow-2xl shadow-indigo-900/20">
+            <div class="grid lg:grid-cols-[1fr_320px] gap-10">
+                <div class="grid sm:grid-cols-2 gap-x-8 gap-y-6">
+                    @foreach ([
+                        ['Service Desk ITIL 4', ['Incident, Service Request, Problem, Change', 'Matriks prioritas & SLA TTO/TTR otomatis', 'CAB/ECAB & kalender perubahan']],
+                        ['CMDB & Topologi', ['18 kelas CI data model iTop', 'Analisis dampak rekursif', 'Topologi jaringan & lokasi bertingkat']],
+                        ['Layanan & Kontrak', ['Katalog layanan & value stream', 'SLA/SLT, OLA, kontrak vendor', 'Peringatan kontrak & garansi habis']],
+                        ['Multi-entitas', ['Induk & anak usaha dalam satu sistem', 'Data terpisah per organisasi', 'Laporan konsolidasi untuk pimpinan']],
+                        ['Monitoring & Perbaikan', ['Korelasi event monitoring → insiden', 'Basis pengetahuan & Known Error', 'Continual Improvement Register']],
+                        ['Implementasi & Pendampingan', ['On-premise atau cloud privat', 'Migrasi data dari spreadsheet/iTop', 'Pelatihan & pendampingan ITIL 4']],
+                    ] as [$t, $items])
+                        <div>
+                            <p class="font-bold text-sky-300">{{ $t }}</p>
+                            <ul class="mt-2 space-y-1.5 text-sm text-slate-200">@foreach ($items as $i)<li class="flex gap-2"><span class="text-emerald-400">✓</span>{{ $i }}</li>@endforeach</ul>
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
+                <div class="rounded-2xl bg-white/5 border border-white/10 p-6 flex flex-col">
+                    <span class="self-start text-xs font-bold px-2 py-1 rounded-full grad">Enterprise</span>
+                    <p class="text-2xl font-extrabold mt-3">Harga sesuai skala</p>
+                    <p class="text-sm text-slate-300 mt-2">Dihitung dari jumlah entitas, lokasi, dan agen. Termasuk instalasi, migrasi data awal, dan pelatihan tim.</p>
+                    <div class="mt-auto pt-6 space-y-3">
+                        @if ($waUrl)
+                            <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="w-full h-11 inline-flex items-center justify-center rounded-xl grad font-bold">Jadwalkan demo Enterprise</a>
+                        @endif
+                        <a href="#demo" class="w-full h-11 inline-flex items-center justify-center rounded-xl border border-white/30 font-semibold hover:bg-white/10">Coba demo sekarang</a>
+                        <a href="{{ route('implementation') }}" class="w-full h-11 inline-flex items-center justify-center rounded-xl text-sm text-sky-300 hover:text-white">Lihat tahapan implementasi →</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -188,21 +205,25 @@
     <div class="max-w-5xl mx-auto px-4">
         <div class="rounded-3xl grad p-10 sm:p-14 text-white text-center shadow-2xl shadow-indigo-500/30">
             <h2 class="text-3xl sm:text-4xl font-extrabold">Lihat sendiri dalam 30 detik.</h2>
-            <p class="mt-3 text-white/90 max-w-2xl mx-auto">Tanpa registrasi, tanpa kartu kredit. Masuk sebagai tamu, jelajahi {{ number_format($stats['tickets']) }} tiket, {{ number_format($stats['cis']) }} CI, dan topologi jaringan tiga organisasi — lalu coba buat tiket Anda sendiri.</p>
-            <div class="mt-8 flex flex-wrap justify-center gap-3">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="h-12 px-7 inline-flex items-center rounded-xl bg-white text-slate-900 font-bold">Buka Dashboard →</a>
-                @else
-                    {!! $guestForm('Coba sebagai Tamu Sekarang →', 'h-12 px-7 rounded-xl bg-white text-slate-900 font-bold hover:bg-slate-100') !!}
-                    <a href="{{ route('login') }}" class="h-12 px-7 inline-flex items-center rounded-xl border border-white/40 font-semibold hover:bg-white/10">Masuk dengan akun</a>
-                @endauth
+            <p class="mt-3 text-white/90 max-w-2xl mx-auto">Tanpa registrasi. Pilih perusahaan, masuk sebagai tamu, jelajahi tiket, CMDB, dan topologi jaringannya, lalu coba buat tiket Anda sendiri.</p>
+            <div class="mt-8 max-w-3xl mx-auto">
+                @include('partials.demo-picker', ['orgs' => $orgs, 'variant' => 'chips', 'dark' => true, 'center' => true])
+                <div class="mt-6 flex flex-wrap justify-center gap-3">
+                    @if ($waUrl)<a href="{{ $waUrl }}" target="_blank" rel="noopener" class="h-11 px-6 inline-flex items-center rounded-xl border border-white/40 font-semibold hover:bg-white/10">Jadwalkan demo Enterprise</a>@endif
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="h-11 px-6 inline-flex items-center rounded-xl border border-white/40 font-semibold hover:bg-white/10">Buka Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}" class="h-11 px-6 inline-flex items-center rounded-xl border border-white/40 font-semibold hover:bg-white/10">Masuk dengan akun</a>
+                    @endauth
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <footer class="border-t border-slate-200 py-8 text-center text-sm text-slate-500">
-    © {{ date('Y') }} Simpul ITSM · Dibangun dengan Laravel {{ app()->version() }} & MySQL · Data model terinspirasi iTop, praktik mengikuti ITIL 4.
+    © {{ date('Y') }} Simpul ITSM Enterprise · Dibangun dengan Laravel {{ app()->version() }} & MySQL · Data model terinspirasi iTop, praktik mengikuti ITIL 4.
+    <div class="mt-2 flex justify-center gap-4"><a href="{{ route('implementation') }}" class="hover:text-indigo-600">Panduan Implementasi</a><a href="{{ route('guide.index') }}" class="hover:text-indigo-600">Panduan Penggunaan</a></div>
 </footer>
 </body>
 </html>

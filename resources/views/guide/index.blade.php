@@ -21,7 +21,7 @@
         @auth
             <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-indigo-600 text-white text-sm font-semibold">Kembali ke aplikasi →</a>
         @else
-            <form method="POST" action="{{ route('guest.login') }}">@csrf<button class="h-10 px-4 rounded-xl bg-indigo-600 text-white text-sm font-semibold">Coba sebagai Tamu →</button></form>
+            <a href="{{ route('landing') }}#demo" class="h-10 px-4 inline-flex items-center rounded-xl bg-indigo-600 text-white text-sm font-semibold">Coba sebagai Tamu →</a>
         @endauth
     </div>
 </header>

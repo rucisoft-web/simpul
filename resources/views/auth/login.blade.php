@@ -5,9 +5,14 @@
     <title>Masuk · Simpul ITSM</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com/3.4.5"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/alpinejs/3.14.1/cdn.min.js"></script>
+    <style>[x-cloak]{display:none!important}</style>
     <script>tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"'] } } } };</script>
 </head>
 <body class="font-sans min-h-screen grid lg:grid-cols-2 bg-white">
+    {{-- Tombol Bantuan kanan atas --}}
+    <a href="{{ route('guide.index') }}#mulai" class="fixed top-4 right-4 z-10 inline-flex items-center gap-1.5 h-10 px-4 rounded-xl border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 text-sm font-semibold" title="Bantuan: cara masuk & memulai">
+        <x-icon name="help" class="w-4 h-4"/> Bantuan</a>
     <div class="hidden lg:flex flex-col justify-between bg-[#070f2b] text-white p-12 relative overflow-hidden">
         <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-indigo-600/40 blur-3xl"></div>
         <a href="{{ route('landing') }}" class="relative flex items-center gap-2"><span class="grid place-items-center w-9 h-9 rounded-xl bg-gradient-to-br from-sky-400 to-indigo-600 font-extrabold">S</span><span class="font-extrabold">Simpul</span></a>
@@ -17,10 +22,11 @@
     <div class="flex items-center justify-center p-6">
         <div class="w-full max-w-sm">
             <h1 class="text-2xl font-extrabold">Masuk</h1>
-            <p class="text-sm text-slate-500 mt-1">Gunakan akun Anda, atau langsung coba sebagai tamu.</p>
-            <form method="POST" action="{{ route('guest.login') }}" class="mt-6">@csrf
-                <button class="w-full h-12 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold shadow-lg shadow-indigo-500/20">Coba sebagai Tamu →</button>
-            </form>
+            <p class="text-sm text-slate-500 mt-1">Gunakan akun Anda, atau coba sebagai tamu dengan data demo satu perusahaan.</p>
+            @if (session('status'))<p class="mt-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm px-3 py-2">{{ session('status') }}</p>@endif
+            <div class="mt-6">
+                @include('partials.demo-picker', ['orgs' => \App\Models\Organization::whereNull('parent_id')->orderBy('name')->get(), 'variant' => 'chips'])
+            </div>
             <div class="flex items-center gap-3 my-6 text-xs text-slate-400"><span class="flex-1 h-px bg-slate-200"></span>atau dengan akun<span class="flex-1 h-px bg-slate-200"></span></div>
             <form method="POST" action="{{ route('login.attempt') }}" class="space-y-3">@csrf
                 @error('email')<p class="text-sm text-rose-600">{{ $message }}</p>@enderror
