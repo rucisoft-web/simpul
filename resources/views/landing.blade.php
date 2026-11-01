@@ -55,13 +55,13 @@
             <span class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-sky-200">● ITSM & CMDB Enterprise · ITIL 4 · data model iTop</span>
             <h1 class="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] tracking-tight">Satu layar untuk <span class="text-grad">seluruh layanan TI</span> grup usaha Anda.</h1>
             <p class="mt-5 text-lg text-slate-300 max-w-xl">Gangguan jaringan di pool, link VSAT di anjungan lepas pantai, atau Wi-Fi kampus saat KRS — Simpul menghubungkan tiket, perangkat, layanan, dan SLA sehingga tim Anda tahu <b class="text-white">apa yang terdampak, siapa yang menangani, dan kapan harus selesai.</b></p>
-            <div class="mt-8 flex flex-wrap gap-3">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="h-12 px-6 inline-flex items-center rounded-xl grad font-bold shadow-lg shadow-indigo-500/30">Buka Dashboard →</a>
-                @else
-                    <a href="#demo" class="h-12 px-6 inline-flex items-center rounded-xl grad font-bold shadow-lg shadow-indigo-500/30 hover:opacity-90">Pilih perusahaan demo →</a>
-                    <a href="#enterprise" class="h-12 px-6 inline-flex items-center rounded-xl border border-white/20 hover:bg-white/10 font-semibold">Lihat paket Enterprise</a>
-                @endauth
+            <div class="mt-8 max-w-xl rounded-2xl border border-white/15 bg-white/5 p-4">
+                @include('partials.demo-picker', ['orgs' => $orgs, 'variant' => 'chips', 'dark' => true])
+            </div>
+            <div class="mt-4 flex flex-wrap gap-3 text-sm">
+                @auth<a href="{{ route('dashboard') }}" class="font-semibold underline">Buka Dashboard →</a>@endauth
+                <a href="#demo" class="text-slate-300 hover:text-white underline">Lihat profil ketiga perusahaan</a>
+                <a href="#enterprise" class="text-slate-300 hover:text-white underline">Paket Enterprise</a>
             </div>
             <div class="mt-10 grid grid-cols-4 gap-4 max-w-lg">
                 @foreach ([[number_format($stats['cis']), 'CI di CMDB'], [number_format($stats['tickets']), 'tiket demo'], [$stats['brands'], 'merek perangkat'], [$stats['sla'].'%', 'SLA tercapai']] as [$v, $l])
@@ -148,19 +148,7 @@
         <h2 class="text-3xl sm:text-4xl font-extrabold mt-2 max-w-3xl">Pilih satu perusahaan, lalu jelajahi layanan TI-nya dari dalam.</h2>
         <p class="text-slate-400 mt-3 max-w-3xl text-sm">Setiap perusahaan punya data demo sendiri: CMDB, topologi, layanan, SLA, kontrak, dan tiket 12 bulan. Setelah masuk, seluruh layar hanya menampilkan data perusahaan yang Anda pilih; pindah perusahaan lewat tautan <b class="text-slate-200">Ganti ke</b> di kanan atas. Profil disusun dari Laporan Tahunan 2025 dan situs resmi institusi; perangkat, IP, orang, dan tiket adalah simulasi dan tidak berafiliasi dengan organisasi terkait.</p>
         <div class="mt-12">
-            @auth
-                <div class="grid lg:grid-cols-3 gap-5">
-                    @foreach ($orgs as $o)
-                        <div class="rounded-2xl bg-white/5 border border-white/10 p-6">
-                            <span class="text-xs font-bold px-2 py-1 rounded-full" style="background: {{ $o->color }}">{{ $scen[$o->code][0] ?? $o->industry }}</span>
-                            <p class="text-xl font-extrabold mt-4">{{ $o->name }}</p>
-                            <p class="text-slate-300 text-sm mt-2">{{ $scen[$o->code][1] ?? '' }}</p>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                @include('partials.demo-picker', ['orgs' => $orgs, 'variant' => 'cards', 'dark' => true, 'scen' => $scen])
-            @endauth
+            @include('partials.demo-picker', ['orgs' => $orgs, 'variant' => 'cards', 'dark' => true, 'scen' => $scen])
         </div>
         <div class="grid sm:grid-cols-3 gap-6 mt-16">
             @foreach ([['Lebih cepat', 'menemukan akar masalah dengan analisis dampak & korelasi event'], ['Lebih terukur', 'SLA, MTTR, CSAT, dan beban tim dalam satu laporan'], ['Lebih siap audit', 'jejak perubahan, persetujuan CAB, dan register perbaikan']] as [$t, $d])
@@ -218,15 +206,15 @@
             <h2 class="text-3xl sm:text-4xl font-extrabold">Lihat sendiri dalam 30 detik.</h2>
             <p class="mt-3 text-white/90 max-w-2xl mx-auto">Tanpa registrasi. Pilih perusahaan, masuk sebagai tamu, jelajahi tiket, CMDB, dan topologi jaringannya, lalu coba buat tiket Anda sendiri.</p>
             <div class="mt-8 max-w-3xl mx-auto">
-                @auth
-                    <a href="{{ route('dashboard') }}" class="h-12 px-7 inline-flex items-center rounded-xl bg-white text-slate-900 font-bold">Buka Dashboard →</a>
-                @else
-                    @include('partials.demo-picker', ['orgs' => $orgs, 'variant' => 'chips', 'dark' => true, 'center' => true, 'buttonClass' => 'h-12 px-7 rounded-xl bg-white text-slate-900 font-bold hover:bg-slate-100'])
-                    <div class="mt-6 flex flex-wrap justify-center gap-3">
-                        @if ($waUrl)<a href="{{ $waUrl }}" target="_blank" rel="noopener" class="h-11 px-6 inline-flex items-center rounded-xl border border-white/40 font-semibold hover:bg-white/10">Jadwalkan demo Enterprise</a>@endif
+                @include('partials.demo-picker', ['orgs' => $orgs, 'variant' => 'chips', 'dark' => true, 'center' => true])
+                <div class="mt-6 flex flex-wrap justify-center gap-3">
+                    @if ($waUrl)<a href="{{ $waUrl }}" target="_blank" rel="noopener" class="h-11 px-6 inline-flex items-center rounded-xl border border-white/40 font-semibold hover:bg-white/10">Jadwalkan demo Enterprise</a>@endif
+                    @auth
+                        <a href="{{ route('dashboard') }}" class="h-11 px-6 inline-flex items-center rounded-xl border border-white/40 font-semibold hover:bg-white/10">Buka Dashboard</a>
+                    @else
                         <a href="{{ route('login') }}" class="h-11 px-6 inline-flex items-center rounded-xl border border-white/40 font-semibold hover:bg-white/10">Masuk dengan akun</a>
-                    </div>
-                @endauth
+                    @endauth
+                </div>
             </div>
         </div>
     </div>
