@@ -82,7 +82,7 @@ Artisan::command('panduan:screenshot {--url=http://127.0.0.1:8000} {--browser=} 
     $base = rtrim($this->option('url'), '/');
     foreach ($targets as $name => $path) {
         // Halaman login diambil tanpa sesi; layar lain lewat tautan masuk-sebagai-tamu.
-        $url = $name === 'login' ? $base.$path : $base.'/coba-sebagai-tamu?next='.urlencode($path);
+        $url = $name === 'login' ? $base.$path : $base.'/coba-sebagai-tamu?org=BBRD&next='.urlencode($path);
         $profile = storage_path('framework/shot-'.Str::random(8));
         $file = $dir.DIRECTORY_SEPARATOR.$name.'.png';
         $cmd = sprintf('"%s" --headless=new --disable-gpu --hide-scrollbars --no-first-run --force-device-scale-factor=1 --window-size=1440,900 --virtual-time-budget=8000 --user-data-dir="%s" --screenshot="%s" "%s"',

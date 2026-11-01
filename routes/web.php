@@ -24,7 +24,7 @@ Route::get('/panduan', [GuideController::class, 'index'])->name('guide.index');
 Route::get('/panduan/{key}', [GuideController::class, 'panel'])->name('guide.panel');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'demo.org'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
     Route::get('/scope', [DashboardController::class, 'scope'])->name('scope');
 

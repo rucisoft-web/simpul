@@ -1,4 +1,4 @@
-# Simpul ITSM
+# Simpul ITSM Enterprise
 
 Aplikasi IT Service Management & CMDB berbasis **Laravel 13 + MySQL**, dengan data model mengikuti
 [iTop](https://www.itophub.io/wiki/page?id=latest:datamodel:start) dan alur kerja mengikuti **ITIL 4**.
@@ -7,7 +7,7 @@ Aplikasi IT Service Management & CMDB berbasis **Laravel 13 + MySQL**, dengan da
 
 | Area | Layar |
 |---|---|
-| Landing page (AIDA) | `/` — Attention (hero), Interest (tantangan & fitur), Desire (skenario & paket), Action (CTA). Tombol **Coba sebagai Tamu** |
+| Landing page (AIDA) | `/` — Attention (hero), Interest (tantangan & fitur), Desire (pilih perusahaan demo & paket Simpul Enterprise), Action (CTA). Pengunjung memilih satu perusahaan lalu **Masuk sebagai Tamu**; data perusahaan lain tidak tercampur |
 | Bantuan & panduan | Tombol **Bantuan** (ikon ?) di kanan atas setiap layar — juga tombol `?` di keyboard — membuka konsep, cara input, dan keterangan isian/kolom untuk layar yang sedang dibuka. Semua topik ada di `/panduan` (tangkapan layar asli, ilustrasi konsep) |
 | Operasional | Dashboard, Service Desk (Insiden, Permintaan, Problem, Perubahan), Monitoring & Event, Kalender Perubahan |
 | CMDB | Configuration Items (18 kelas iTop), detail CI + analisis dampak rekursif, **topologi jaringan bertingkat** (D3), lokasi, merek & model |
@@ -27,7 +27,7 @@ Akun demo (dibuat seeder):
 |---|---|---|
 | Admin | `admin@simpul.test` (atau `SIMPUL_ADMIN_EMAIL`) | `password` (atau `SIMPUL_DEMO_PASSWORD`) |
 | Agen | `agent.bbrd@simpul.test`, `agent.medc@simpul.test`, `agent.uinsk@simpul.test` | sama dengan admin |
-| Tamu | tombol **Coba sebagai Tamu** (tanpa password) | — |
+| Tamu | pilih perusahaan › **Masuk sebagai Tamu** (tanpa password); terkunci ke perusahaan itu, pindah lewat **Ganti ke** | — |
 
 ## Instalasi
 
@@ -54,6 +54,7 @@ Pengaturan khusus (`.env`):
 | `SIMPUL_ADMIN_EMAIL` | Email Administrator demo (default `admin@simpul.test`) |
 | `SIMPUL_DEMO_PASSWORD` | Kata sandi Administrator & Agen demo. **Ganti di server publik.** |
 | `SIMPUL_DEMO_RESET_DAILY` | `true` = data demo dibuat ulang tiap hari pukul `SIMPUL_DEMO_RESET_AT` (butuh cron `schedule:run`) |
+| `SIMPUL_WHATSAPP` | Nomor WhatsApp tombol "Jadwalkan demo Enterprise" (kosong = disembunyikan) |
 | `APP_TIMEZONE` | Default `Asia/Jakarta` |
 
 Instalasi di hosting cPanel (dengan atau tanpa Terminal): lihat panduan `PANDUAN-CPANEL.md` di paket `simpul-cpanel.zip`.

@@ -50,6 +50,7 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket)
     {
+        Scope::ensure($ticket->organization_id);
         $ticket->load(['organization', 'caller.location', 'agent', 'team.members', 'service.family', 'subcategory', 'cis.brand', 'cis.location', 'logs',
             'parent', 'children.organization', 'events.ci', 'knownErrors']);
         $transitions = Itil::transitions($ticket->type, $ticket->status);
@@ -61,7 +62,7 @@ class TicketController extends Controller
     public function create(Request $request)
     {
         $type = $request->query('type', 'incident');
-        $orgs = Organization::whereNull('parent_id')->with('children')->orderBy('name')->get();
+        $orgs = Scope::roots()->load('children');
         if ($orgs->isEmpty()) {
             return redirect()->route('dashboard')->with('status', 'Belum ada organisasi. Muat data demo dulu: php artisan demo:reset');
         }
@@ -89,6 +90,7 @@ class TicketController extends Controller
             'change_type' => 'nullable|in:standard,normal,emergency',
             'planned_start' => 'nullable|date',
         ]);
+        Scope::ensure((int) $data['organization_id']);
         $sub = ! empty($data['service_subcategory_id']) ? \App\Models\ServiceSubcategory::with('service')->find($data['service_subcategory_id']) : null;
         $priority = Itil::priority($data['impact'], $data['urgency']);
         $slt = Itil::DEFAULT_SLT[$priority];
@@ -126,6 +128,7 @@ class TicketController extends Controller
 
     public function transition(Request $request, Ticket $ticket)
     {
+        Scope::ensure($ticket->organization_id);
         $action = $request->input('action');
         $allowed = Itil::transitions($ticket->type, $ticket->status);
         abort_unless(isset($allowed[$action]), 422, 'Transisi tidak valid untuk status saat ini.');
@@ -166,6 +169,7 @@ class TicketController extends Controller
 
     public function comment(Request $request, Ticket $ticket)
     {
+        Scope::ensure($ticket->organization_id);
         $data = $request->validate(['message' => 'required|string|max:3000', 'kind' => 'required|in:public,private']);
         $ticket->logs()->create(['author' => $request->user()->name, 'kind' => $data['kind'], 'message' => $data['message'], 'created_at' => now()]);
         $ticket->touch();

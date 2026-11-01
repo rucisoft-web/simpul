@@ -1,10 +1,10 @@
-# Panduan Instalasi Simpul ITSM di cPanel
+# Panduan Instalasi Simpul ITSM Enterprise di cPanel
 
 Simpul ITSM (IT Service Management & CMDB berbasis data model iTop + ITIL 4) adalah aplikasi Laravel 13 + MySQL. Panduan ini untuk hosting cPanel biasa (shared hosting atau VPS dengan cPanel), dengan dua jalur: **dengan Terminal/SSH** dan **tanpa Terminal** (File Manager + Cron Jobs).
 
 Contoh di panduan memakai akun cPanel `userku`, folder program `/home/userku/simpul`, dan alamat `https://simpul.domainanda.com`. Sesuaikan dengan milik Anda.
 
-> Simpul adalah aplikasi **demo/peragaan**: seluruh isi (organisasi, CI, layanan, SLA, kontrak, ±2.100 tiket) dimuat oleh data demo PT Blue Bird Tbk, PT Medco Energi Internasional Tbk, dan UIN Sunan Kalijaga. Pengunjung bisa langsung masuk dengan tombol **Coba sebagai Tamu** dan mencoba membuat tiket serta menjalankan alur kerja ITIL.
+> Simpul adalah aplikasi **demo/peragaan** edisi Enterprise: seluruh isi (organisasi, CI, layanan, SLA, kontrak, ±2.100 tiket) dimuat oleh data demo tiga perusahaan, yaitu PT Blue Bird Tbk, PT Medco Energi Internasional Tbk, dan UIN Sunan Kalijaga. Pengunjung memilih satu perusahaan di halaman depan, lalu masuk dengan tombol **Masuk sebagai Tamu**. Data perusahaan lain tidak ikut tampil.
 
 ## 1. Prasyarat hosting
 
@@ -88,6 +88,8 @@ SIMPUL_DEMO_PASSWORD="SandiKuat-2026"
 # situs demo publik: data demo dibuat ulang setiap hari (lihat bagian 7)
 SIMPUL_DEMO_RESET_DAILY=true
 SIMPUL_DEMO_RESET_AT=02:00
+# tombol "Jadwalkan demo Enterprise" di halaman depan (kosong = disembunyikan)
+SIMPUL_WHATSAPP=6281234567890
 ```
 
 Biarkan `APP_KEY=` kosong; diisi oleh `key:generate` di langkah 6. Di cPanel `DB_HOST` hampir selalu `localhost`. Kata sandi yang memuat `#` atau spasi diberi tanda kutip.
@@ -109,7 +111,7 @@ php artisan optimize
 |---|---|---|
 | Administrator | nilai `SIMPUL_ADMIN_EMAIL` (default `admin@simpul.test`) | nilai `SIMPUL_DEMO_PASSWORD` |
 | Agen | `agent.bbrd@simpul.test`, `agent.medc@simpul.test`, `agent.uinsk@simpul.test` | nilai `SIMPUL_DEMO_PASSWORD` |
-| Tamu | tombol **Coba sebagai Tamu** (tanpa kata sandi) | — |
+| Tamu | pilih perusahaan di halaman depan/login › **Masuk sebagai Tamu** (tanpa kata sandi) | — |
 
 Administrator tambahan atau ganti kata sandi: `php artisan simpul:create-admin` (menanyakan nama, email, kata sandi; atau pakai `--name= --email= --password=`). Bila email sudah ada, akun itu dijadikan admin dan kata sandinya diganti.
 
@@ -137,10 +139,10 @@ Cek jadwal: `php artisan schedule:list`. Reset manual kapan saja: `php artisan d
 
 ## 8. Mulai memakai
 
-1. Buka `https://simpul.domainanda.com` — halaman depan dengan tombol **Coba sebagai Tamu**.
-2. Atau `https://simpul.domainanda.com/login` dan masuk sebagai Administrator/Agen.
-3. Di setiap layar ada tombol **Bantuan** (ikon ?) di kanan atas, atau tekan tombol `?` di keyboard: panel berisi **konsep**, **cara menggunakan/input**, dan **keterangan isian & kolom** untuk layar yang sedang dibuka. Semua topik juga ada di `https://simpul.domainanda.com/panduan` (bisa dicetak).
-4. Pemilih organisasi di kanan atas menyaring seluruh layar ke Blue Bird, Medco, UIN Sunan Kalijaga, atau semua organisasi.
+1. Buka `https://simpul.domainanda.com`. Halaman depan disusun dengan alur AIDA: *Attention* (hero), *Interest* (tantangan & fitur), *Desire* (pilih perusahaan demo & paket Simpul Enterprise), lalu *Action* (masuk sebagai tamu atau jadwalkan demo lewat WhatsApp `SIMPUL_WHATSAPP`).
+2. Pengunjung mengklik kartu perusahaan dulu, baru tombol **Masuk sebagai Tamu** aktif. Akun Tamu terkunci pada perusahaan itu: tidak ada pilihan "Semua Organisasi", dan tiket, CI, atau layanan perusahaan lain tidak bisa dibuka meskipun alamatnya diketik langsung. Pindah perusahaan lewat nama perusahaan di kanan atas › **Ganti ke**.
+3. Administrator/Agen masuk di `https://simpul.domainanda.com/login` dan tetap bisa melihat **Semua Organisasi**.
+4. Di setiap layar ada tombol **Bantuan** (ikon ?) di kanan atas, atau tekan tombol `?` di keyboard: panel berisi **konsep**, **cara menggunakan/input**, dan **keterangan isian & kolom** untuk layar yang sedang dibuka. Semua topik juga ada di `https://simpul.domainanda.com/panduan` (bisa dicetak).
 5. Data yang diinput pengguna: **tiket** (Insiden, Permintaan Layanan, Problem, Perubahan) lewat **+ Tiket Baru**, **transisi status** lewat panel *Langkah berikutnya*, dan **catatan aktivitas** di detail tiket. Data induk (CI, topologi, layanan, SLA, kontrak, pengetahuan) dimuat oleh data demo.
 
 > **Data demo.** Profil organisasi diambil dari sumber publik (Laporan Tahunan 2025, situs uin-suka.ac.id). Perangkat, IP, orang, dan tiket adalah **simulasi**, bukan data resmi organisasi tersebut.

@@ -113,11 +113,22 @@
                     <x-icon name="down" class="w-4 h-4 text-slate-400"/>
                 </button>
                 <div x-show="o" x-cloak class="absolute right-0 mt-2 w-72 card p-1.5 z-50">
-                    <a href="{{ route('scope', ['org' => 'all']) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>Semua Organisasi</a>
-                    @foreach ($roots as $r)
-                        <a href="{{ route('scope', ['org' => $r->id]) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm {{ $scopeOrg?->id === $r->id ? 'bg-slate-50 font-semibold' : '' }}">
-                            <span class="w-2.5 h-2.5 rounded-full" style="background: {{ $r->color }}"></span>{{ $r->name }}</a>
-                    @endforeach
+                    @if ($u->isGuest())
+                        {{-- Tamu: data satu perusahaan saja; pindah perusahaan = masuk ulang sebagai tamu perusahaan lain --}}
+                        <p class="px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Data demo aktif</p>
+                        <p class="flex items-center gap-2 px-3 py-2 text-sm font-semibold"><span class="w-2.5 h-2.5 rounded-full" style="background: {{ $scopeOrg?->color }}"></span>{{ $scopeOrg?->name }}</p>
+                        <p class="px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400 border-t border-slate-100">Ganti ke</p>
+                        @foreach ($roots->where('id', '!=', $scopeOrg?->id) as $r)
+                            <a href="{{ route('guest.link', ['org' => $r->code]) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm">
+                                <span class="w-2.5 h-2.5 rounded-full" style="background: {{ $r->color }}"></span>{{ $r->name }}</a>
+                        @endforeach
+                    @else
+                        <a href="{{ route('scope', ['org' => 'all']) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm"><span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>Semua Organisasi</a>
+                        @foreach ($roots as $r)
+                            <a href="{{ route('scope', ['org' => $r->id]) }}" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 text-sm {{ $scopeOrg?->id === $r->id ? 'bg-slate-50 font-semibold' : '' }}">
+                                <span class="w-2.5 h-2.5 rounded-full" style="background: {{ $r->color }}"></span>{{ $r->name }}</a>
+                        @endforeach
+                    @endif
                 </div>
             </div>
             <a href="{{ route('tickets.create') }}" class="hidden sm:inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold">
@@ -141,8 +152,8 @@
 
         @if ($u->isGuest())
             <div class="bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-200 text-amber-900 text-sm px-4 lg:px-6 py-2 flex items-center gap-2">
-                <x-icon name="eye" class="w-4 h-4"/> Mode tamu — semua data adalah simulasi. Anda bebas mencoba membuat tiket dan menjalankan alur kerja.
-                <a href="{{ route('landing') }}#harga" class="ml-auto font-semibold underline hidden sm:inline">Minta demo penuh</a>
+                <x-icon name="eye" class="w-4 h-4 shrink-0"/> <span>Mode tamu · data demo <b>{{ $scopeOrg?->name }}</b> (simulasi). Silakan coba membuat tiket dan menjalankan alur kerja.</span>
+                <a href="{{ route('landing') }}#enterprise" class="ml-auto font-semibold underline hidden sm:inline whitespace-nowrap">Jadwalkan demo Enterprise</a>
             </div>
         @endif
 

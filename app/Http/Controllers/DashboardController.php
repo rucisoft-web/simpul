@@ -44,10 +44,10 @@ class DashboardController extends Controller
             ->selectRaw('priority, COUNT(*) n')->groupBy('priority')->pluck('n', 'priority');
         $byService = $t()->where('tickets.created_at', '>=', now()->subDays(90))->join('services', 'services.id', '=', 'tickets.service_id')
             ->selectRaw('services.name, COUNT(*) n')->groupBy('services.name')->orderByDesc('n')->limit(8)->pluck('n', 'name');
-        $byOrg = Ticket::query()->where('tickets.created_at', '>=', now()->subDays(90))
+        $byOrg = Scope::apply(Ticket::query())->where('tickets.created_at', '>=', now()->subDays(90))
             ->join('organizations as o', 'o.id', '=', 'tickets.organization_id')
             ->selectRaw('COALESCE(o.parent_id, o.id) root, COUNT(*) n')->groupBy('root')->pluck('n', 'root');
-        $roots = Organization::whereNull('parent_id')->get()->keyBy('id');
+        $roots = Scope::roots()->keyBy('id');
         $ciByClass = Scope::apply(Ci::query(), 'organization_id', false)->selectRaw('class, COUNT(*) n')->groupBy('class')->orderByDesc('n')->pluck('n', 'class');
         $topBrands = Scope::apply(Ci::query(), 'organization_id', false)->join('brands', 'brands.id', '=', 'cis.brand_id')
             ->selectRaw('brands.name, brands.color, COUNT(*) n')->groupBy('brands.name', 'brands.color')->orderByDesc('n')->limit(10)->get();
@@ -65,6 +65,12 @@ class DashboardController extends Controller
     public function scope(Request $request)
     {
         $org = $request->query('org');
+        if (Scope::locked()) {
+            // Tamu berpindah perusahaan lewat tautan "Ganti ke" (masuk ulang sebagai tamu perusahaan lain).
+            $code = Organization::whereNull('parent_id')->whereKey((int) $org)->value('code');
+
+            return $code ? redirect()->route('guest.link', ['org' => $code]) : back();
+        }
         if ($org === 'all' || ! $org) {
             session()->forget('org_id');
         } else {

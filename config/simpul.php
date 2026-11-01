@@ -14,4 +14,7 @@ return [
     // tanggal tiket kembali relatif ke hari ini). Butuh cron "schedule:run" setiap menit.
     'demo_reset_daily' => (bool) env('SIMPUL_DEMO_RESET_DAILY', false),
     'demo_reset_at' => env('SIMPUL_DEMO_RESET_AT', '02:00'),
+
+    // Nomor WhatsApp untuk tombol "Jadwalkan demo Enterprise" di halaman depan (format 62812...). Kosong = tombol disembunyikan.
+    'whatsapp' => env('SIMPUL_WHATSAPP'),
 ];

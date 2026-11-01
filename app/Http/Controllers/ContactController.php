@@ -22,7 +22,7 @@ class ContactController extends Controller
 
     public function organizations()
     {
-        $orgs = Organization::whereNull('parent_id')->with(['children' => fn ($q) => $q->withCount(['persons', 'tickets'])])
+        $orgs = Organization::whereNull('parent_id')->when(Scope::rootId(), fn ($q) => $q->whereKey(Scope::rootId()))->with(['children' => fn ($q) => $q->withCount(['persons', 'tickets'])])
             ->withCount(['locations', 'persons', 'teams', 'cis', 'services', 'tickets'])->get();
 
         return view('contacts.organizations', compact('orgs'));

@@ -32,6 +32,7 @@ class CmdbController extends Controller
 
     public function show(Ci $ci)
     {
+        Scope::ensure($ci->organization_id);
         $ci->load(['organization', 'location.parent', 'brand', 'deviceModel', 'team', 'parent', 'children.brand', 'rack', 'rackedDevices', 'interfaces',
             'contacts', 'services', 'contracts', 'dependsOn', 'dependents', 'events' => fn ($q) => $q->latest('occurred_at')->limit(10)]);
         $tickets = $ci->tickets()->with('organization')->latest()->limit(15)->get();
@@ -46,7 +47,7 @@ class CmdbController extends Controller
 
     public function topology(Request $request)
     {
-        $orgs = Organization::whereNull('parent_id')->orderBy('name')->get();
+        $orgs = Scope::roots();
         $org = $orgs->firstWhere('id', (int) $request->query('org', Scope::rootId())) ?? $orgs->firstWhere('code', 'BBRD') ?? $orgs->first();
         if (! $org) {
             return redirect()->route('dashboard')->with('status', 'Belum ada organisasi. Muat data demo dulu: php artisan demo:reset');
@@ -60,6 +61,7 @@ class CmdbController extends Controller
     public function topologyData(Request $request)
     {
         $org = Organization::findOrFail($request->query('org'));
+        Scope::ensure($org->id);
         $endpoints = $request->boolean('endpoints');
 
         if ($request->query('mode') === 'location') {

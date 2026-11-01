@@ -23,6 +23,7 @@ class ServiceController extends Controller
 
     public function show(Service $service)
     {
+        Scope::ensure($service->organization_id);
         $service->load(['organization', 'family', 'subcategories', 'cis.brand', 'contracts.sla.slts', 'contracts.organization']);
         $stats = Ticket::where('service_id', $service->id)->where('created_at', '>=', now()->subDays(90))
             ->selectRaw('type, COUNT(*) n, SUM(sla_ttr_passed) breached')->groupBy('type')->get()->keyBy('type');

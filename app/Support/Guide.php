@@ -52,13 +52,15 @@ class Guide
                     'Aplikasi berisi data demo tiga organisasi: PT Blue Bird Tbk (transportasi), PT Medco Energi Internasional Tbk (energi), dan UIN Sunan Kalijaga Yogyakarta (pendidikan tinggi). Profil organisasi diambil dari sumber publik; perangkat, IP, orang, dan tiket adalah simulasi.',
                 ],
                 'steps' => [
-                    'Buka halaman utama lalu klik tombol <b>Coba sebagai Tamu</b> — Anda langsung masuk tanpa registrasi.',
+                    'Di halaman utama, bagian <b>Demo Perusahaan</b>, klik kartu salah satu perusahaan: PT Blue Bird Tbk, PT Medco Energi, atau UIN Sunan Kalijaga.',
+                    'Klik <b>Masuk sebagai Tamu</b> (tombol baru aktif setelah perusahaan dipilih). Anda langsung masuk tanpa registrasi, dan seluruh layar hanya menampilkan data perusahaan itu.',
+                    'Untuk pindah perusahaan, klik nama perusahaan di kanan atas → <b>Ganti ke</b>. Data perusahaan lain tidak pernah tercampur.',
                     'Atau klik <b>Masuk</b>, isi email & password akun (admin/agen), lalu klik <b>Masuk</b>.',
-                    'Setelah masuk Anda diarahkan ke Dashboard. Pita kuning di atas menandakan mode tamu.',
+                    'Setelah masuk Anda diarahkan ke Dashboard. Pita kuning di atas menandakan mode tamu dan menyebut perusahaan demo yang aktif.',
                     'Untuk keluar, klik avatar di kanan atas → <b>Keluar</b>.',
                 ],
-                'fields' => ['Email' => 'Alamat email akun terdaftar.', 'Password' => 'Kata sandi akun.', 'Ingat saya' => 'Sesi tetap aktif setelah browser ditutup.'],
-                'tips' => ['Mode tamu tetap bisa membuat tiket dan menjalankan alur kerja, jadi seluruh fitur dapat dicoba.'],
+                'fields' => ['Perusahaan demo' => 'Pilihan wajib untuk akun Tamu; menentukan data yang tampil.', 'Email' => 'Alamat email akun terdaftar.', 'Password' => 'Kata sandi akun.', 'Ingat saya' => 'Sesi tetap aktif setelah browser ditutup.'],
+                'tips' => ['Mode tamu tetap bisa membuat tiket dan menjalankan alur kerja, jadi seluruh fitur dapat dicoba pada perusahaan yang dipilih.'],
             ],
             'navigasi' => [
                 'title' => 'Navigasi, Pemilih Organisasi & Tombol Panduan',
@@ -69,7 +71,7 @@ class Guide
                 ],
                 'steps' => [
                     'Klik item menu di sidebar untuk berpindah layar. Angka merah di Service Desk = jumlah tiket insiden & permintaan yang masih terbuka.',
-                    'Klik pemilih organisasi (kanan atas) → pilih <b>PT Blue Bird Tbk</b>, <b>PT Medco Energi</b>, <b>UIN Sunan Kalijaga</b>, atau <b>Semua Organisasi</b>.',
+                    'Klik pemilih organisasi (kanan atas). Admin/agen dapat memilih satu organisasi atau <b>Semua Organisasi</b>; akun Tamu terkunci pada perusahaan demo pilihannya dan berpindah lewat <b>Ganti ke</b>.',
                     'Gunakan kotak pencarian di header untuk mencari tiket berdasarkan nomor referensi atau judul.',
                     'Klik tombol <b>Panduan</b> di kanan atas kapan saja: panel panduan layar yang sedang dibuka akan muncul di sisi kanan.',
                     'Klik <b>+ Tiket Baru</b> untuk langsung membuat tiket dari layar mana pun.',
