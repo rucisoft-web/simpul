@@ -24,6 +24,16 @@ class InstallTest extends TestCase
         }
     }
 
+    public function test_implementation_guide_page_renders_and_is_linked_from_landing(): void
+    {
+        $this->get(route('implementation'))->assertOk()
+            ->assertSee('Tahapan implementasi')
+            ->assertSee('id="batasan-versi-saat-ini-daftar-periksa"', false)
+            ->assertSee('<table>', false);
+
+        $this->get(route('landing'))->assertOk()->assertSee(route('implementation'), false);
+    }
+
     public function test_help_panels_render(): void
     {
         foreach (array_keys(Guide::all()) as $key) {

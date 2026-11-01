@@ -29,7 +29,7 @@
     <div class="max-w-7xl mx-auto px-4 h-16 flex items-center gap-6 text-white">
         <a href="#" class="flex items-center gap-2"><span class="grid place-items-center w-9 h-9 rounded-xl grad font-extrabold">S</span><span class="font-extrabold">Simpul <span class="hidden sm:inline text-xs font-semibold text-sky-300 align-middle">Enterprise</span></span></a>
         <nav class="hidden md:flex gap-6 text-sm text-slate-300">
-            <a href="#masalah" class="hover:text-white">Tantangan</a><a href="#fitur" class="hover:text-white">Fitur</a><a href="#demo" class="hover:text-white">Demo Perusahaan</a><a href="#enterprise" class="hover:text-white">Enterprise</a>
+            <a href="#masalah" class="hover:text-white">Tantangan</a><a href="#fitur" class="hover:text-white">Fitur</a><a href="#demo" class="hover:text-white">Demo Perusahaan</a><a href="#enterprise" class="hover:text-white">Enterprise</a><a href="{{ route('implementation') }}" class="hover:text-white">Implementasi</a>
         </nav>
         <div class="flex-1"></div>
         <a href="{{ route('guide.index') }}" class="hidden sm:inline-flex items-center gap-1.5 text-sm text-slate-300 hover:text-white"><x-icon name="help" class="w-4 h-4"/> Panduan</a>
@@ -192,6 +192,7 @@
                             <a href="{{ $waUrl }}" target="_blank" rel="noopener" class="w-full h-11 inline-flex items-center justify-center rounded-xl grad font-bold">Jadwalkan demo Enterprise</a>
                         @endif
                         <a href="#demo" class="w-full h-11 inline-flex items-center justify-center rounded-xl border border-white/30 font-semibold hover:bg-white/10">Coba demo sekarang</a>
+                        <a href="{{ route('implementation') }}" class="w-full h-11 inline-flex items-center justify-center rounded-xl text-sm text-sky-300 hover:text-white">Lihat tahapan implementasi →</a>
                     </div>
                 </div>
             </div>
@@ -222,6 +223,7 @@
 
 <footer class="border-t border-slate-200 py-8 text-center text-sm text-slate-500">
     © {{ date('Y') }} Simpul ITSM Enterprise · Dibangun dengan Laravel {{ app()->version() }} & MySQL · Data model terinspirasi iTop, praktik mengikuti ITIL 4.
+    <div class="mt-2 flex justify-center gap-4"><a href="{{ route('implementation') }}" class="hover:text-indigo-600">Panduan Implementasi</a><a href="{{ route('guide.index') }}" class="hover:text-indigo-600">Panduan Penggunaan</a></div>
 </footer>
 </body>
 </html>
