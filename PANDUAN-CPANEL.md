@@ -178,6 +178,7 @@ php artisan optimize
 | `Class "Faker\Factory" not found` saat seeding | Pakai paket zip terbaru (versi lama belum menyertakan Faker di `vendor` produksi), atau jalankan `composer install --no-dev` dari repo terbaru. |
 | `Allowed memory size … exhausted` saat seeding | Naikkan `memory_limit` ke 256M di *MultiPHP INI Editor*. |
 | `SQLSTATE[HY000] [1045] Access denied` | Periksa awalan `userku_` pada nama database/user dan ALL PRIVILEGES. |
+| `Duplicate entry 'BBRD' for key 'organizations_code_unique'` | Data demo dari percobaan sebelumnya sudah sebagian masuk. Jalankan `php artisan migrate:fresh --seed --force` (atau `php artisan demo:reset`), lalu `php artisan optimize`. |
 | `SQLSTATE[42S02] … Table 'sessions' doesn't exist` | Migrasi belum dijalankan: `php artisan migrate --seed --force`. |
 | `No application encryption key` | Jalankan `php artisan key:generate --force`. |
 | Halaman polos tanpa gaya | Browser/jaringan memblokir CDN (`cdn.tailwindcss.com`, `cdnjs.cloudflare.com`). Buka dari jaringan lain. |
